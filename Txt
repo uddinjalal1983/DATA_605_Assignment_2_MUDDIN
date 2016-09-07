@@ -1,0 +1,174 @@
+---
+title: "DATA 606 Assignment 2"
+author: "Md Jalal Uddin"
+date: "September 6, 2016"
+output: html_document
+---
+
+1. Problem set 1
+(1) Show that ATA Not equal to AAT
+in general.
+
+```{r, echo=TRUE}
+# Creating a 2 by 2 matrix and finding its transpose matrix
+A <- matrix(1:4, nrow = 2)
+A
+
+tran_A <- t(A)
+tran_A
+
+# Multiply the transposed matrix of A by matrix A
+tA_A <- tran_A %*% A
+tA_A
+# Multiply matrix A by the transposed matrix of A 
+A_At <- A %*% tran_A
+A_At
+# now we will see tA_A and A_At are equal or not.
+(tA_A==A_At)
+
+#we will follow a similar procedure for a 3 by 3 matrix and see they are equal or not. 
+
+# Creating a 3 by 3 matrix and finding its transpose matrix
+A <- matrix(11:19, nrow = 3, byrow=T)
+A
+
+tran_A <- t(A)
+tran_A
+# Multiply the transposed matrix of A by matrix A
+tA_A <- tran_A %*% A
+tA_A
+# Multiply matrix A by the transposed matrix of A 
+A_At <- A %*% tran_A
+A_At
+# now we will see tA_A and A_At are equal or not.
+(tA_A==A_At)
+
+#since for both 2 by 2 matrix and 3 by 3 matrix tA_A and A_At are not equal, we can say that ATA Not equal to AAT in general.
+
+```
+
+Problem Set 2:
+
+(2) For a special type of square matrix A, we get ATA = AAT. Under what conditions could this be true? (Hint: The Identity matrix I is an example of such a matrix).Please typeset your response using LaTeX/SWeave mode in RStudio. If you do it in paper, please either scan or take a picture of the work and submit it. 
+
+```{r, echo=TRUE}
+# For identity matrix we can show that Show that ATA = AAT. First we will check with a 2 by 2 identiy matrix then we will also check with a 3 by 3 identity matrix. 
+
+A <- matrix(c(1,0,0,1),nrow=2)
+A
+
+tran_A <- t(A)
+tran_A
+
+# Multiply the transposed matrix of A by matrix A
+tA_A <- tran_A %*% A
+tA_A
+# Multiply matrix A by the transposed matrix of A 
+A_At <- A %*% tran_A
+A_At
+# now we will see tA_A and A_At are equal or not.
+(tA_A==A_At)
+
+#we will follow a similar procedure for a 3 by 3 identity matrix and see they are equal or not. 
+
+# Creating a 3 by 3 identity matrix and finding its transpose matrix
+A <- matrix(c(1,0,0,0,1,0,0,0,1), nrow = 3, byrow=T)
+A
+
+tran_A <- t(A)
+tran_A
+# Multiply the transposed matrix of A by matrix A
+tA_A <- tran_A %*% A
+tA_A
+# Multiply matrix A by the transposed matrix of A 
+A_At <- A %*% tran_A
+A_At
+# now we will see tA_A and A_At are equal or not.
+(tA_A==A_At)
+
+#since for both 2 by 2 identity matrix and a 3 by 3 identity matrix tA_A and A_At are equal, we can say that for identity matrix ATA = AAT. .
+
+```
+
+2. Problem set 2
+Matrix factorization is a very important problem. There are supercomputers built just
+to do matrix factorizations. Every second you are on an airplane, matrices are being
+factorized. Radars that track flights use a technique called Kalman filtering. At the heart
+of Kalman Filtering is a Matrix Factorization operation. Kalman Filters are solving linear
+systems of equations when they track your flight using radars.Write an R function to factorize a square matrix A into LU or LDU, whichever you prefer. Please submit your response in an R Markdown document using our class naming convention, E.g. GIyengar Assignment2 PS2.Rmd You don’t have to worry about permuting rows of A and you can assume that A is less than 5x5, if you need to hard-code any variables in your code. If you doing the entire assignment in R, then please submit only one markdown document for both the problems.
+
+```{r, echo=TRUE}
+# we will check first with a 2 by 2 matrix and then with 3 by 3 matrix by creatin a function to factorize a square matrix A into LU. 
+LU <- function(A) {
+
+# first we will check with a 2 by 2 square matrix
+if (nrow(A) == 2) {
+
+  # In order to get element E21 of the matrix A equal to zero we divide A[2,1] by A[1,1] and then subtract the resutl 
+  
+  E_21 <- -A[2,1] / A[1,1]
+  L <- matrix(c(1,0,E_21,1),nrow=2)
+  U <- L %*% A
+
+  L <- solve(L) #find inverse of a matrix L
+
+  # printing the matrixes and compare the LU matrix with matrix A to see whether they are equal or not. 
+  print ("This is the matrix A")  
+  print(A)
+  print ("This is the matrix L") 
+  print(L)
+  print ("This is the matrix U") 
+  print(U)
+  print("Checking LU and A are equal or not")
+  (L %*% U == A)
+
+# now check with a 3 by 3 matrix
+} else if (nrow(A) == 3) {
+
+   # In order to get element E21 of matrix A equal to zero we divide A[2,1] by A[1,1] and then subtract the result
+  E_21 <- -A[2,1] / A[1,1]
+  MatrixE_21 <- matrix(c(1,0,0,E_21,1,0,0,0,1), nrow=3)
+   MatrixE_21_A <- MatrixE_21 %*% A
+
+   # In order to get element E31 of matrix A equal to zero we divide MatrixE_21_A[3,1]  by MatrixE_21_A[3,1]  and then subtract the result
+  E_31 <- -MatrixE_21_A[3,1] / MatrixE_21_A[1,1]
+  MatrixE_31 <- matrix(c(1,0,0,0,1,0,E_31,0,1), nrow=3)
+  MatrixE_31_A <- MatrixE_31 %*% MatrixE_21_A
+
+     # In order to get element E31 of matrix A equal to zero we divide MatrixE_31_A[3,2]  by MatrixE_31_A[2,2]  and then subtract the result
+  
+  E_32 <- -MatrixE_31_A[3,2] / MatrixE_31_A[2,2]
+  MatrixE_32 <- matrix(c(1,0,0,0,1,0,0,E_32,1), nrow=3)
+  U <- MatrixE_32 %*% MatrixE_31_A
+  
+#find inverse of the matrix
+  L <- solve( MatrixE_21) %*% solve( MatrixE_31) %*% solve( MatrixE_32)
+
+  A <- L %*% U
+  
+ print ("This is the matrix A")  
+  print(A)
+  print ("This is the matrix L") 
+  print(L)
+  print ("This is the matrix U") 
+  print(U)
+  print("Checking LU and A are equal or not")
+  (L %*% U == A)
+
+  }
+}
+ #Now we will check with a 2 by 2  square matrix and a 3 by 3 square matrix to find the LU matrix
+
+# checking with a 2 by 2 matrix
+A22 <- matrix(c(1,2,3,4), nrow = 2)
+LU(A22)
+
+# checking with a 3 by 3 matrix
+A33 <- matrix(c(5,6,7,8,9,10,11,12,13), nrow = 3)
+LU(A33)
+
+# checking with another 3 by 3 matrix 
+A_33 <- matrix (31:39, nrow=3)
+LU(A_33)
+```
+
